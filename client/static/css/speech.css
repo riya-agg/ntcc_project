@@ -1,0 +1,82 @@
+
+h1 {
+	background: #001159;
+	width: 100%;
+	border: 0;
+	margin: 15px 0 20px;
+	box-sizing: border-box;
+	height: 65px;
+	text-align: center;
+	border-radius: inherit;
+	color: white;
+}
+
+
+.button {
+    width: 60%;
+    height: 80px;
+	background-color: white;
+	border: white;
+	margin-left: 20%;
+}
+
+
+.button img {
+    width: 70px;
+    height: 70px;
+}
+
+.signGesture {
+	position: absolute;
+	top: 50%;
+	left: 0;
+	right: 0;
+	margin: auto;
+	-webkit-transform: translateY(-50%);
+	-ms-transform: translateY(-50%);
+	transform: translateY(-50%);
+	box-sizing: border-box;
+	width: 50%;
+	height: 85%;
+	padding: 15px;
+}
+
+.canvasAv {
+	position: absolute; left: 0px; top: 0px;
+	width: 100%; height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.column {
+  float: left;
+  padding: 10px;
+  height: 500px;
+}
+
+.left {
+  width: 35%;
+  background-color:rgba(0,0,136,0.4);
+}
+
+.right {
+  width: 65%;
+  background-color:rgba(0,0,136,0.2);
+}
+
+footer {
+  text-align: center;
+  padding: 5px;
+  background-color: rgba(0,0,136,0.23);
+  top: 70%;
+}
+
+.tempVar {
+	display: none;
+}
+
+body, html {
+  height: auto;
+}

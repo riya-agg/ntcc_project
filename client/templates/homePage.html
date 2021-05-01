@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title> Home Page </title>
+		<link rel="stylesheet"  type="text/css"  href="{{ url_for('static', filename='css/homePage.css') }}">
+		
+	</head>
+
+<body>
+<div class="img"></div>
+	<h1><b> Personal Digital Assistant for Hearing/Speech Impaired </b></h1>
+	<h3><i> We use Indian Sign Language here </i></h3>
+
+<button class="button button1">
+    <a href="{{ url_for('signToSpeech') }}">
+       Click Me for Sign-to-Speech Conversion
+    </a>
+</button>
+
+<button class="button button2">
+    <a href="{{ url_for('speechToSign') }}">
+       Click Me for Speech-to-Sign Conversion
+    </a>
+</button>
+
+</body>
+</html>

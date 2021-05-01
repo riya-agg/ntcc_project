@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Speech to Sign Conversion </title>
+		
+		<base href="/speech-to-sign/">
+		
+		<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+		<link rel="stylesheet"  type="text/css"  href="{{ url_for('static', filename='speech.css') }}">
+		<link rel="stylesheet"  type="text/css"  href="{{ url_for('static', filename='cwasa.css') }}">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+		<!--
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+		
+		<script language="javascript" type = "text/javascript" src="/js/animationPlayer.js"></script>
+		<script type="text/javascript" src="/js/clickmic.js"></script>
+		
+		<script type="text/javascript" href="{{ url_for('static',filename='animationPlayer.js') }}"></script>
+		<script type="text/javascript" href="{{ url_for('static',filename='clickmic.js') }}"></script>
+		<script type="text/javascript" href="{{ url_for('static',filename='allcsa.js') }}"></script>
+		-->
+		
+		<script src="./allcsa.js"></script>
+		<script src="/clickmic.js"></script>
+		<script src="/animationPlayer.js"></script>
+		
+		<script language="javascript">
+        // Initial configuration
+        var initial_config = {
+            "avsbsl" : ["luna", "siggi", "anna", "marc", "francoise"],
+            "avSettings" : { "avList": "avsbsl", "initAv": "marc" }
+        };
+
+        // to store the sigml list
+        var sigmlList = null;
+
+        // to tell if avatar is ready or not
+        var is_avatar_ready = false;
+		</script>
+	</head>
+
+<body> <!--onload="CWASA.init(initial_config);"> -->
+
+	<script language="javascript">
+		var final_response = "";
+		/* function getParsedText(speech) {
+			url = 'http://localhost:5000/parser' + '?speech=' + speech ;
+			
+			// var HttpClient = function() {
+			//								this.get = function(aUrl) { // , aCallback) {
+			
+			var anHttpRequest = new XMLHttpRequest();									
+			anHttpRequest.onreadystatechange = function() {
+													if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200) {
+														final_response = JSON.parse(anHttpRequest.responseText);
+														// aCallback(anHttpRequest.responseText);
+														// return_function(final_response);
+														document.getElementById('isl').innerHTML = final_response.isl_text_string; 
+														document.getElementById('speech_').innerHTML = speech; 
+														document.getElementById('preprocessstring').innerHTML = final_response.pre_process_string;
+													}
+												};
+
+			anHttpRequest.open( "GET", url, true );
+			anHttpRequest.send();
+											// };
+										// };
+			
+			// var final_response = "";
+			// var client = new HttpClient();
+			
+			// client.get('http://localhost:5000/parser' + '?speech=' + speech); //, function(response) {
+																				//console.log('response from parser: ',response);
+																				//final_response = JSON.parse(response);
+																			    // });
+			
+			//function return_function(final_response) {
+			//		console.log('final_response from fn: ', final_response);
+			//		document.getElementById('isl').innerHTML = final_response.isl_text_string; // ['isl_text_string'];
+			//		document.getElementById('speech_').innerHTML = speech; 
+			//		document.getElementById('preprocessstring'.innerHTML = final_response.pre_process_string;
+					//var a = final_response.pre_process_string; // ['pre_process_string'];
+					//console.log('a: ',a);
+					//return a;
+			//}
+		}
+		*/
+		function tokenizeEnglish(inText) {
+			// flag = false; // flag will be set true if the inText text will end with pMarks
+			var result = inText.length; 
+			
+			/* the input should end with a punctuation mark
+			for(x = 0; x < englishpMarks.length; x++) {
+				// check if last character of the sentence is pMarks or not
+				if(inText[len - 1] == englishpMarks[x]) {
+					flag = true;
+					break;
+				}
+			}
+			
+			// if no puntuation in the end then put a puntuation mark in the sentence
+			if(flag == false)
+				inputText = inText + ".";
+			else
+				inputText = inText;
+			*/
+			
+			// convert the given paragraph into sentences 
+			// result is an array holding each sentence own its own
+			//result = inputText.match( /[^\.!\?]+[\.!\?]+/g );
+			//console.log("tokenize into sentences : " + result);
+			
+			// convert each sentence into words and also add the pause 
+			// identifier to make the animation pause after each word
+			
+			// loop over the result array and replace space and end of sentence 
+			// and store it newString
+			newString = "";
+			for(y = 0; y < inText.length; y++) {
+				w = inText[y];
+				if(w == " ")
+					newString = newString + ",";
+				else 
+					newString = newString + w;
+			}
+			// newString = newString + ",EOL,"; // EOL - end of line
+			// create array of tokens
+			console.log("Processed tokenised string : " + newString);
+			return newString;
+		}
+		
+		
+		function clickme(speech) {
+			inputText = speech;
+			console.log(inputText);
+			// read the language that has been set
+			lang = "English"; // using english for default
+			tokens = [];
+			
+			// tokenize
+			//tokenString = tokenizeEnglish(inputText);
+			
+			tokens = tokenizeEnglish(inputText).split(',');
+			
+			console.log("Tokens Received!");
+
+			// remove empty values from tokens
+			for(x = 0; x < tokens.length; x++) {
+				t = tokens[x];
+
+				if(t == "")
+					tokens.splice(x, 1);  // remove 1 element at position x
+			}
+			console.log('Tokens after splice: ', tokens);
+
+			// process tokens based on language settings
+			// use the script to generate the sigml files available and if
+			// word file is available use word file less speak as letter based
+			// list of sigmlfile is available in sigmlArray.js
+			
+			for(x = 0; x < tokens.length; x++) {
+				// process each token
+				t = tokens[x];
+				//if(t == "EOL")
+					//continue;
+				// convert token to lower case for seaching in the database
+				// search for name and it will return filename if it will exists
+				t = t.toLowerCase();
+				// t = t.replace('.',""); // remove the puntuation from the end
+				tokens[x] = t;
+			}
+
+			console.log(tokens);
+			// reset the wordArray and arrayCounter here
+			wordArray = [];
+			arrayCounter = 0;
+			console.log("sigmllength : " + sigmlList.length);
+			for(x = 0; x < tokens.length; x++) {
+				wordfoundflag = false;
+				t = tokens[x];
+				for(y = 0; y < sigmlList.length; y++) {
+					if(sigmlList[y].name == t) {
+						// console.log(sigmlList[y].sid);
+						wordArray[arrayCounter++] = new FinalText(t, sigmlList[y].fileName);
+						wordfoundflag = true;
+						break;
+					}
+				}
+
+				// if word not found then add chars - starts here
+				if(wordfoundflag == false) {
+					wordlen = t.length;
+					for(p = 0; p < wordlen; p++) {
+						q = t[p];
+						//q=q.toUpperCase();
+						for(k = 0; k < sigmlList.length; k++) {
+							if(sigmlList[k].name == q) {
+								wordArray[arrayCounter++] = new FinalText(q, sigmlList[k].fileName);
+								break;
+							}
+						}
+					}
+					max = 0,countit = 0;
+
+					for(k = 0; k < sigmlList.length; k++) {
+						countit++;
+						if (sigmlList[k].sid > max)
+						{ max = sigmlList[k].sid; }
+					}
+					console.log("maxi is : "+max);
+					max = max + 1;
+					if(t != "EOL"){
+						console.log("k is : "+k);
+						var obj = {"sid": max,"name": t,"fileName": t+".sigml"};
+
+						var newdata = JSON.stringify(sigmlList);
+						console.log(newdata);
+
+					}
+				} // if not word found part ends here
+			}
+			console.log(wordArray);
+			console.log(wordArray.length);
+			$("#debugger").html(JSON.stringify(wordArray));
+
+			// wordArray object contains the word and corresponding files to be played
+			// call the startPlayer on it in syn manner
+			totalWords = wordArray.length;
+			i = 0;
+
+			var int = setInterval(function () {
+												if(i == totalWords) {
+													if(playerAvailableToPlay) {
+														clearInterval(int);
+														finalHint = $("#inputText").val();
+														$("#textHint").html(finalHint);
+													}
+												} else {
+													if(playerAvailableToPlay) {
+														playerAvailableToPlay = false;
+														startPlayer("SignFiles/" + wordArray[i].fileName);
+														$("#textHint").html(wordArray[i].word);
+														i++;
+													}
+												}
+											}, 3000);
+		}
+		
+		
+		function speak() {
+			console.log('Speech input started!');
+			if (window.hasOwnProperty('webkitSpeechRecognition')) {
+
+				var recognition = new webkitSpeechRecognition();
+				recognition.continuous = false;
+				recognition.interimResults = false;
+				recognition.lang = "en-US";
+				recognition.start();
+				recognition.onresult = function(e) {
+					//console.log('Speech: ' + e.results[0][0].transcript);
+					var speech = e.results[0][0].transcript;
+					
+					// convert speech input from English to ISL
+					// var parsedSpeech = 
+					// getParsedText(speech);
+					
+					url = 'http://localhost:5000/parser' + '?speech=' + speech ;
+					var anHttpRequest = new XMLHttpRequest();									
+					anHttpRequest.onreadystatechange = function() {
+															if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200) {
+																final_response = JSON.parse(anHttpRequest.responseText);
+																// aCallback(anHttpRequest.responseText);
+																// return_function(final_response);
+																document.getElementById('isl').innerHTML = final_response.isl_text_string; 
+																document.getElementById('speech_').innerHTML = speech; 
+																//document.getElementById('preprocessstring').innerHTML = final_response.pre_process_string;
+																console.log('getParsedText executed!');
+																console.log('Parsed Speech:' , final_response.pre_process_string);
+																
+																clickme(final_response.pre_process_string);
+																console.log('clickme successful!');
+															}
+														};
+
+					anHttpRequest.open( "GET", url, true );
+					anHttpRequest.send();
+					
+					//console.log('getParsedText executed!');
+					//console.log('Parsed Speech:' , final_response.pre_process_string);
+					
+					//clickme(final_response.pre_process_string);
+					//console.log('clickme successful!');
+					
+					recognition.stop();			
+					console.log('End of Speech input!');
+				};
+				recognition.onerror = function(e) {
+					recognition.stop();
+				}
+			}
+		}
+	</script>
+	
+	
+<!--	<script language="javascript">
+		var recognition = new webkitSpeechRecognition();
+		var answer = document.getElementById("uianswer");
+		//recognition.continuous = true;
+		//recognition.interimResults = true;
+		function speak()
+		{
+			recognition.onresult = function(event) 
+									{ 
+										console.log(event);
+										
+										var output = document.getElementById("output");
+										
+										// answer.innerHTML = ""; 
+										output.innerHTML = "";
+										for(var i = 0; i < event.results.length; i++)
+										{
+											/* answer.innerHTML = answer.innerHTML + event.results[i][0].transcript;*/
+											output.innerHTML = output.innerHTML + event.results[i][0].transcript;
+										}
+									}
+			recognition.start();
+		}
+		
+		
+	 var url = "http://127.0.0.1:5000/speech-to-sign";
+	 
+	 $.post(url, {
+	     animation value 
+
+		},function(data, status) {
+									console.log(data.get_animation);
+									answer.innerHTML = "<h2>" + data.get_animation.toString() + "</h2>";
+									console.log(status);
+							});
+	
+		
+	</script>
+-->
+
+	<!-- <div class="img"></div> -->
+	<h1><b> Speech to Sign Translation<b></h1>
+	
+
+<div class="row">
+
+  <div class="column left">
+    <h3>Give input through mic</h3>
+	<br>
+	<button class = "button speak" onclick="speak()">
+		<img src="data:image/png;base64,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">
+	</button>
+	<br>
+	<div>Input in English: <span id="speech_"></span></div>
+	<br>
+	<div>Input converted to ISL: <span id="isl"></span></div>
+	
+	<footer> 
+		<a href="{{ url_for('home') }}">
+		   Go Back
+		</a>
+	</footer>
+	<!--<div id="uianswer" class="result"><h3> </h3> </div>-->
+  </div>
+  
+  <div class="column right">
+    <h2>Animated Avatar</h2>
+		<div id="signGesture">
+		<div class="CWASAAvatar av0" align="center" >
+						<div class="divAv av0">
+							<canvas class="canvasAv av0" ondragstart="return false" width="219" height="442"></canvas>
+						</div>
+						</div>
+						<!--
+            <table align="center" >
+                <tr align="center">
+                    <td >
+                        
+                    </td>
+                </tr>
+			</table> -->
+		</div>
+  </div>
+</div>
+
+
+
+</body>
+</html>
