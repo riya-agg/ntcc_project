@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">	
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title> Sign to Speech Conversion </title>
+		<link rel="stylesheet"  type="text/css"  href="{{ url_for('static', filename='css/sign.css') }}">
+	</head>
+
+<body>
+	<script type="text/javascript">
+	/*var mediaRecorder;
+	var recordedChunks = [];
+	
+	function record() {
+		//alert("Recording!!");
+		console.log('In record()');
+		document.querySelector('button#download').disabled = false;
+		document.querySelector('button#stop').disabled = false;
+		
+		const constraints = {
+		  video: true,
+		};
+
+		const video = document.querySelector("#input_video");
+		var canvas = document.querySelector("canvas");
+		var stream = canvas.captureStream(10);
+
+		navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+			video.srcObject = stream;
+		  });
+			var options = {mimeType: 'video/webm; codecs=vp9'};
+			//var options = {mimeType: 'video/mp4; codecs=h264'};
+			
+			mediaRecorder = new MediaRecorder(stream, options);
+			mediaRecorder.ondataavailable = handleDataAvailable;
+			mediaRecorder.start();
+
+			function handleDataAvailable(event) {
+				  if (event.data.size > 0) {
+					recordedChunks.push(event.data);
+				  }
+//				  else {
+					// ...
+	//			  }
+			}
+		
+		mediaRecorder.onstop = () => {
+			mediaRecorder.getTracks().forEach((track) => track.stop());
+			download();
+		};
+	}
+	
+	
+	function stop() {
+		console.log('recording stopped!');
+		mediaRecorder.stop();
+	}
+	
+	
+	function download() {
+				
+		var blob = new Blob(recordedChunks, {type: 'video/webm'});
+		var url = URL.createObjectURL(blob);
+		var a = document.createElement('a');
+		document.body.appendChild(a);
+		a.style = 'display: block';
+		a.href = url;
+		a.download = 'sign.webm';
+		a.click();
+		window.URL.revokeObjectURL(url);
+	} */
+
+		function record() {
+					document.querySelector('button#stop').disabled = false;
+					document.querySelector('button#record').disabled = true;
+
+					// XMLHttpRequest
+					var xhr = new XMLHttpRequest();
+					xhr.onreadystatechange = function() {
+						if (xhr.readyState == 4 && xhr.status == 200) {
+							// alert(xhr.responseText);
+						}
+					}
+					xhr.open("POST", "/video_record");
+					xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+					xhr.send(JSON.stringify({ status: "true" }));
+		}
+
+		function stop() {
+					document.querySelector('button#stop').disabled = true;
+					document.querySelector('button#record').disabled = false; 
+
+					// XMLHttpRequest
+					var xhr = new XMLHttpRequest();
+					xhr.onreadystatechange = function() {
+						if (xhr.readyState == 4 && xhr.status == 200) {
+							// alert(xhr.responseText);
+						}
+					}
+					xhr.open("POST", "/video_record");
+					xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+					xhr.send(JSON.stringify({ status: "false" }));
+		}
+	
+	</script>
+
+	<h1><b> Sign to Speech Translation </b></h1>
+	
+	<div class="row">
+	  <div class="column left">
+		<h3>Record Signing Gesture</h3>
+		<div class="row1">
+			<div class="column c1">
+				<button id="record" onclick="record()"> 
+					<!--<img src="https://previews.123rf.com/images/aayam4d/aayam4d1907/aayam4d190701016/127713669-record-button-icon-audio-video-recording-start-button-vector-art-illustration.jpg"></a>
+				-->
+				Record
+				</button>
+			</div>
+				
+			<div class="column c2">
+				<button id="stop" disabled onclick="stop()"> 
+					<!--<img src="https://static.thenounproject.com/png/799305-200.png">-->
+					Stop
+				</button> 
+			</div>
+				
+			<!--<div class="column c3">
+				<button type="button" id="download" class="button" disabled onclick="download()">
+					<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAbFBMVEX///8AAABZWVkWFha2traioqLr6+vg4ODj4+P5+fnl5eXa2tpUVFRLS0v09PQ6Ojo1NTVhYWFHR0coKChCQkJPT08KCgoiIiLU1NRmZmZfX1+JiYm+vr5ra2sdHR0xMTGvr692dnaSkpLIyMgJ2DnNAAADf0lEQVR4nO3d63KiQBBA4aAGFATvxqgxMXn/d4yGoDYyENwdmKbO93cx1ae4DF6KfXoCAAAAAAAAAAAAAABFRrt4Ge9GbY9hT+ClgrYHsSU5/BYekrZHseTTy3y2PYols0vhrO1RLOldCnttj2IJhfpRqB+F+lGoH4X6UagfhfpRqB+F+lGoH4X6UagfhfpRqB+F+lGoH4X6UagfhfpRqB+F+lGoH4X6UagfhfpRqB+F+lGoH4X6UagfhfpRqB+F+lGoH4X6UagfhfqpL4xOBetdyQZ/KhwdT//+5uQTbPbp8JOhcYu/FA6n6RZ7GyP+m2E2/TwybfKHwmiebeLeXjxexh+bEqsLo/Flkzdbgz7sxatMrCy8CfQO9kZ90Po6nBcXH2JVhUF88zfWNod9yOJmOm/qF21SUehPxZ+wO+4DPj2h6Gle5YWJ/APPtgeuby4GfAnvtygtDF/E61f2B67N74kRl/eXm7LCaCle3Ss8zNsWvsq9sMlvUFK4WYnXzsy3Da0aViSaC2+XiXOge8v9r3ArBo1zB6qxMJB7sOfoHjzzYzHqRF5uTIXhRLxq7uQ5mBnJYddiWENh0hevmbr+2Eh5TVzf7sXiwlAGTpoeuLZELhqTm3OxsDCQe33s9CGayi0a8fWKWlQY5ZaJghsF9xgXjYLCjVwmXp1dJqThTCZmB+p9YW4PbpUEnhYNuWeWv4PfFYbysrRScYimEnn5OKSXj3xhIm+2nV8mJJno/STmCn25iXtvCMsl8kB9P5+LsjAQb3i9la49eOLLy818kyuM5A3eVtE5mLlfNG4LlS4TUj4xuBZuh1reLpULZcb4+mHVQt7ajRUeoqlErncmEwX3okaT6j51y4Q0WlUGztUtE5K/rQh081O1OnJvpvJc/VStjmFZotZlQgp7xkCXP1Wrw58bApfqz8HMqHjRmHbpv9Qp2ovLLgXmv7b5OQc7c4im7haNLiwTUm7R6MYyIYmvbbad24Nn/vUeNe7YOZi5LBrKPlWrY3X+Fqbv4nf0/83H8e340fYQAAAAAAAAAAAAAFBTtB80aW982oYlX/Gh36xD/NVk4MDwUzy7Bs0FBu+tFL439yujfSuBDT6WZ7RrqXDX1K8Zu1/Y0oWmyYdHRf3qaSxYNPh7xnZ2YqPP/xqsFg2v+Itxww84S/bPzdp39/eMAAAAAAAAZ98eeidjJPoHsQAAAABJRU5ErkJggg==">
+				</button> 
+			</div>-->
+			
+		</div>
+		
+		<h4><b> Signs available: </b></h4>
+		<ol>
+			<li> Hello </li>
+			<li> How are you? </li>
+			<li> Begin </li>
+			<li> Good Morning </li>
+			<li> Good Night </li>
+			<li> Good Afternoon </li>
+			<li> Thankyou </li>
+			<li> Sorry </li>
+			<li> Nice </li>
+			<li> Welcome </li>
+		</ol>
+		
+		<footer> 
+			<a href="{{ url_for('home') }}"> Go Back </a>
+		</footer>
+	  </div>
+	  
+	  <div class="column right">
+			<div id="signGesture">
+								<!--<canvas class="canvasAv av0" id="camera" width="640" height="480" id="c">
+									<video id="input_video" muted></video>
+								</canvas>-->
+								
+								 <img id="video" src="{{ url_for('video_viewer') }}">
+			</div>
+	  </div>
+	</div>
+
+</body>
+</html>
