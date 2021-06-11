@@ -4,7 +4,7 @@ from flask_cors import CORS
 import json
 import cv2
 from camera import VideoCamera
-#import util
+import util
 
 app = Flask(__name__) 
 CORS(app)
@@ -130,6 +130,14 @@ def video_stream():
 @app.route('/video_viewer')
 def video_viewer():
     return Response(video_stream(), mimetype='multipart/x-mixed-replace; boundary=frame')
+	
+@app.route('/predict_sign', methods=['POST'])
+def prediction():
+	response = jsonify({
+							'sign_prediction': util.predict_sign()
+						})
+	response.headers.add('Access-Control-Allow-Origin', '*')
+	return response
        
 if __name__ == "__main__":
     app.run(debug=True)

@@ -176,21 +176,6 @@
 												console.log('filenames:', tokens);
 												sendSigmlText(tokens, function(resp) {
 																		playText(resp);
-																	/*var int = setInterval(function () {
-																								if(i == totalWords) {
-																									if(playerAvailableToPlay) {
-																										clearInterval(int); //stops the timer
-																									}
-																								} else {
-																									if(playerAvailableToPlay) {
-																										playerAvailableToPlay = false;
-																										playText(resp);
-																										clearInterval(int);
-																										startPlayer("SignFiles/" + wordArray[i].fileName);
-																										i++;
-																									}
-																								}
-																							}, 3000); */
 															});	
 											});
 			} 
@@ -236,6 +221,8 @@
 		<button class = "button speak" onclick="speak()">
 			<img src="data:image/png;base64,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">
 		</button> 
+		<br>
+		<br>
 		<div>Input in English: <span id="speech_"></span></div> <br>
 		<div>Input converted to ISL: <span id="isl"></span></div>
 		
@@ -252,10 +239,6 @@
 								<canvas class="canvasAv av0" ondragstart="return false" width="219" height="442"></canvas>
 							</div>
 					</div>
-					<!--<script language="text/javascript">
-                            // Set default sign
-                            //setSiGMLURL("SignFiles/hello.sigml");
-                    </script>-->
 			</div>
 	  </div>
 	</div>
@@ -8287,7 +8270,7 @@ allowSiGMLText: true
 };
 defaults = {
 jasVersionTag: "vhg2017",
-animgenFPS: 50,
+animgenFPS: 90,
 animgenServer: "http://vhg.cmp.uea.ac.uk/cgi-bin/animgen/animgenserver.pl",
 sigmlBase: "sigml",
 avJARBase: "avatars",
