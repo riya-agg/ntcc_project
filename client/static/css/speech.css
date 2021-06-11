@@ -70,7 +70,9 @@ footer {
   text-align: center;
   padding: 5px;
   background-color: rgba(0,0,136,0.23);
-  top: 70%;
+  top: 80%;
+  position: fixed;
+  left: 15%;
 }
 
 .tempVar {

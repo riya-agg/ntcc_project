@@ -91,7 +91,7 @@
 					document.querySelector('button#stop').disabled = true;
 					document.querySelector('button#record').disabled = false; 
 
-					// XMLHttpRequest
+					// XMLHttpRequest for stopping
 					var xhr = new XMLHttpRequest();
 					xhr.onreadystatechange = function() {
 						if (xhr.readyState == 4 && xhr.status == 200) {
@@ -101,6 +101,17 @@
 					xhr.open("POST", "/video_record");
 					xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 					xhr.send(JSON.stringify({ status: "false" }));
+					
+					// XMLHttpRequest for prediction
+					var xhr2 = new XMLHttpRequest();
+					xhr2.onreadystatechange = function() {
+						if (xhr2.readyState == 4 && xhr2.status == 200) {
+							document.getElementById('prediction').innerHTML = xhr2.responseText; 
+						}
+					}
+					xhr2.open("POST", "/predict_sign");
+					xhr2.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+					xhr2.send(JSON.stringify({ status: "false" }));
 		}
 	
 	</script>
@@ -154,13 +165,16 @@
 	  </div>
 	  
 	  <div class="column right">
+		<div class="column c3">
 			<div id="signGesture">
-								<!--<canvas class="canvasAv av0" id="camera" width="640" height="480" id="c">
-									<video id="input_video" muted></video>
-								</canvas>-->
-								
-								 <img id="video" src="{{ url_for('video_viewer') }}">
+				<img id="video" src="{{ url_for('video_viewer') }}">
 			</div>
+		</div>
+		<div class="column c4">
+				<h3>Predicted Output: </h3> 
+				<br>
+				<h2 id="prediction"><b></b></h2>
+		</div>
 	  </div>
 	</div>
 
