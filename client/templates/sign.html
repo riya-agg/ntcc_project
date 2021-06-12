@@ -106,7 +106,14 @@
 					var xhr2 = new XMLHttpRequest();
 					xhr2.onreadystatechange = function() {
 						if (xhr2.readyState == 4 && xhr2.status == 200) {
-							document.getElementById('prediction').innerHTML = xhr2.responseText; 
+							// document.getElementById('prediction').innerHTML = JSON.parse(xhr2.responseText).prediction; 
+							document.getElementById('prediction').innerHTML = JSON.parse(xhr2.responseText).sign_prediction; 
+							
+							// text-to-speech 
+							var u = new SpeechSynthesisUtterance();
+							u.text = JSON.parse(xhr2.responseText).sign_prediction;
+							u.lang = 'en-US';
+							speechSynthesis.speak(u);
 						}
 					}
 					xhr2.open("POST", "/predict_sign");
@@ -173,7 +180,7 @@
 		<div class="column c4">
 				<h3>Predicted Output: </h3> 
 				<br>
-				<h2 id="prediction"><b></b></h2>
+				<h3 id="prediction"></h3>
 		</div>
 	  </div>
 	</div>

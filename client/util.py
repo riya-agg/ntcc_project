@@ -3,9 +3,10 @@ import json
 import numpy as np
 import os
 import cv2
-import tensorflow as tf
+#import tensorflow as tf
+from keras.models import model_from_json
 
-__model = None
+#__model = None
 
 def predict_sign():
 	# reading the recorded video from webcam
@@ -39,35 +40,65 @@ def predict_sign():
 	loaded_model_json = json_file.read()
 	json_file.close()
 	
-	loaded_model = tf.keras.model.model_from_json(loaded_model_json)
+	loaded_model = model_from_json(loaded_model_json)
 	
 	loaded_model.load_weights("model.h5")
 	print("Loaded model from disk")
 	
 	# predicting the sign
-	pred = __model.predict(frame_data)
+	pred = loaded_model.predict(frame_data)
 	print("\nPREDICTION >> \n",pred)
-	'''
-	if pred >= 0.5:
-		return 'Loan Approved!'
+	#index_ = pred.index(np.max(pred))
+	
+	#index_ = np.where(pred == np.max(pred))
+	index_ = np.argmax(pred)
+	print(index_)
+	
+	if index_ == 0:
+	    return 'Begin'
+	elif index_ == 1:
+	    return 'Good Afternoon'
+	elif index_ == 2:
+	    return 'Good Morning'
+	elif index_ == 3:
+	    return 'Good Night'
+	elif index_ == 4:
+	    return 'Hello'
+	elif index_ == 5:
+	    return 'How are you'
+	elif index_ == 6:
+	    return 'Nice'
+	elif index_ == 7:
+	    return 'Sorry'
+	elif index_ == 8:
+	    return 'Thank You'
+	elif index_ == 9:
+	    return 'Welcome'
 		
-	else:
-		return 'Loan Rejected!' 
-
+	'''	
+		
+	if index_ == 0:
+	    p = {'prediction': 'Begin'}
+	elif index_ == 1:
+	    p = {'prediction': 'Good Afternoon'}
+	elif index_ == 2:
+	    p = {'prediction': 'Good Morning'}
+	elif index_ == 3:
+	    p = {'prediction': 'Good Night'}
+	elif index_ == 4:
+	    p = {'prediction': 'Hello'}
+	elif index_ == 5:
+	    p = {'prediction': 'How are you'}
+	elif index_ == 6:
+	    p = {'prediction': 'Nice'}
+	elif index_ == 7:
+	    p = {'prediction': 'Sorry'}
+	elif index_ == 8:
+	    p = {'prediction': 'Thank You'}
+	elif index_ == 9:
+	    p = {'prediction': 'Welcome'}
+		
+	return json.dumps(p)
 	
-def load_saved_artifacts():
-	print("loading saved artifacts...start")
-	path = os.path.dirname(__file__) 
-	artifacts = os.path.join(path, "artifacts")
-	
-	global __model
-	
-	if __model is None:
-		with open(artifacts[0]+"/signPickleFileGBM.pkl", 'rb') as f:
-			__model = pickle.load(f)
-			
-	print("loading saved artifacts...done")
-
-
-load_saved_artifacts()
-'''
+	'''
+		
